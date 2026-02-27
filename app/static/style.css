@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background-color: #f7f7f9;
+    color: #222;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+.panel {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+}
+
+button {
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid #0077cc;
+    background-color: #0088ff;
+    color: white;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #006fd1;
+}
+
+#status {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+#download {
+    margin-top: 10px;
+}
+
+.flowchart {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.flow-step {
+    padding: 12px 18px;
+    background-color: #ffffff;
+    border: 2px solid #0077cc;
+    border-radius: 8px;
+    min-width: 140px;
+    text-align: center;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    font-size: 14px;
+}
+
+.flow-step:hover {
+    background-color: #e6f3ff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.flow-step.completed {
+    background-color: #d4f5dd;
+    border-color: #2e8b57;
+}
+
+.flow-arrow {
+    margin: 0 5px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #444;
+}
+
+#step-info {
+    margin-top: 15px;
+    font-style: italic;
+    color: #333;
+    padding: 10px 0;
+}
