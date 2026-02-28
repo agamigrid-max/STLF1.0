@@ -8,12 +8,18 @@
 
 <h2>Short-Term Load Forecasting</h2>
 
+<!-- ========================= -->
+<!-- UPLOAD PANEL -->
+<!-- ========================= -->
 <div class="panel">
     <h3>1. Upload CSV</h3>
     <input type="file" id="fileInput">
     <button onclick="uploadFile()">Upload</button>
 </div>
 
+<!-- ========================= -->
+<!-- RUN PIPELINE PANEL -->
+<!-- ========================= -->
 <div class="panel">
     <h3>2. Run Pipeline</h3>
     <button onclick="runPipeline()">Run Forecast</button>
@@ -22,106 +28,143 @@
 <div id="status"></div>
 <div id="download"></div>
 
+<!-- ========================= -->
+<!-- DOWNLOAD METRICS REPORT BUTTON -->
+<!-- ========================= -->
+<button class="download-report-btn" onclick="downloadMetricsReport()">
+    Download Metrics Report
+</button>
+
+<!-- ========================= -->
+<!-- PIPELINE FLOW (ONE ROW + ARROWS) -->
+<!-- ========================= -->
 <h3>Pipeline Flow</h3>
 
-<div class="flowchart">
-    <div class="flow-step" id="step-upload" onclick="stepClick('upload')">
-        Upload CSV
-    </div>
+<div class="pipeline-row">
+
+    <div class="flow-step" id="step-upload" onclick="stepClick('upload')">Upload CSV</div>
     <div class="flow-arrow">→</div>
 
-    <div class="flow-step" id="step-ingestion" onclick="stepClick('ingestion')">
-        Ingestion
-    </div>
+    <div class="flow-step" id="step-ingestion" onclick="stepClick('ingestion')">Ingestion</div>
     <div class="flow-arrow">→</div>
 
-    <div class="flow-step" id="step-preprocessing" onclick="stepClick('preprocessing')">
-        Preprocessing
-    </div>
+    <div class="flow-step" id="step-preprocessing" onclick="stepClick('preprocessing')">Preprocessing</div>
     <div class="flow-arrow">→</div>
 
-    <div class="flow-step" id="step-features" onclick="stepClick('features')">
-        Feature Engineering
-    </div>
+    <div class="flow-step" id="step-features" onclick="stepClick('features')">Feature Engineering</div>
     <div class="flow-arrow">→</div>
 
-    <div class="flow-step" id="step-model" onclick="stepClick('model')">
-        Model & Forecast
-    </div>
+    <div class="flow-step" id="step-model" onclick="stepClick('model')">Model Training</div>
     <div class="flow-arrow">→</div>
 
-    <div class="flow-step" id="step-output" onclick="stepClick('output')">
-        Output File
-    </div>
+    <div class="flow-step" id="step-forecast" onclick="stepClick('forecast')">Forecasting</div>
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step" id="step-evaluation" onclick="stepClick('evaluation')">Evaluation</div>
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step" id="step-output" onclick="stepClick('output')">Save & Output</div>
+
 </div>
 
 <div id="step-info"></div>
 
-<script>
-function uploadFile() {
-    const fileInput = document.getElementById("fileInput").files[0];
-    if (!fileInput) {
-        document.getElementById("status").innerText = "Please select a file first.";
-        return;
-    }
 
-    const formData = new FormData();
-    formData.append("file", fileInput);
+<!-- ========================= -->
+<!-- METRICS DASHBOARD (GROUPED + FULL WIDTH GLOSSARY) -->
+<!-- ========================= -->
+<h3>Model Evaluation Metrics</h3>
 
-    document.getElementById("status").innerText = "Uploading...";
+<div id="metrics-dashboard" class="metrics-dashboard">
 
-    fetch("/upload", { method: "POST", body: formData })
-        .then(r => r.json())
-        .then(d => {
-            document.getElementById("status").innerText = d.message;
-            highlightStep("step-upload");
-        })
-        .catch(() => document.getElementById("status").innerText = "Upload failed.");
-}
+    <!-- Accuracy (alone) -->
+    <div class="metric-category">
+        <div class="category-header"><span class="category-title">Accuracy</span></div>
+        <div class="category-content">
+            <div class="metric-row"><span>MAE</span><span id="acc-mae" class="metric-value">—</span><div class="metric-color"></div></div>
+            <div class="metric-row"><span>RMSE</span><span id="acc-rmse" class="metric-value">—</span><div class="metric-color"></div></div>
+            <div class="metric-row"><span>MAPE</span><span id="acc-mape" class="metric-value">—</span><div class="metric-color"></div></div>
+            <div class="metric-row"><span>SMAPE</span><span id="acc-smape" class="metric-value">—</span><div class="metric-color"></div></div>
+            <div class="metric-row"><span>MD_AE</span><span id="acc-md_ae" class="metric-value">—</span><div class="metric-color"></div></div>
+            <div class="metric-row"><span>R²</span><span id="acc-r2" class="metric-value">—</span><div class="metric-color"></div></div>
+            <div class="metric-row"><span>NRMSE</span><span id="acc-nrmse" class="metric-value">—</span><div class="metric-color"></div></div>
+            <div class="metric-row"><span>WAPE</span><span id="acc-wape" class="metric-value">—</span><div class="metric-color"></div></div>
+        </div>
+    </div>
 
-function runPipeline() {
-    document.getElementById("status").innerText = "Running pipeline...";
-    resetFlowHighlights();
-    highlightStep("step-upload"); // assume upload done
-    highlightStep("step-ingestion");
+    <!-- Group: Reliability + Drift -->
+    <div class="metric-group">
 
-    fetch("/run", { method: "POST" })
-        .then(r => r.json())
-        .then(d => {
-            document.getElementById("status").innerText = d.message;
-            document.getElementById("download").innerHTML =
-                `<a href="/download">Download Output File</a>`;
+        <div class="metric-category">
+            <div class="category-header"><span class="category-title">Reliability</span></div>
+            <div class="category-content">
+                <div class="metric-row"><span>MBE</span><span id="rel-mbe" class="metric-value">—</span><div class="metric-color"></div></div>
+                <div class="metric-row"><span>PBIAS</span><span id="rel-pbias" class="metric-value">—</span><div class="metric-color"></div></div>
+                <div class="metric-row"><span>Error Variance</span><span id="rel-error_variance" class="metric-value">—</span><div class="metric-color"></div></div>
+            </div>
+        </div>
 
-            highlightStep("step-preprocessing");
-            highlightStep("step-features");
-            highlightStep("step-model");
-            highlightStep("step-output");
-        })
-        .catch(() => document.getElementById("status").innerText = "Pipeline failed.");
-}
+        <div class="metric-category">
+            <div class="category-header"><span class="category-title">Drift</span></div>
+            <div class="category-content">
+                <div class="metric-row"><span>Status</span><span id="drift-status" class="metric-value">—</span><div class="metric-color"></div></div>
+            </div>
+        </div>
 
-function resetFlowHighlights() {
-    const steps = document.querySelectorAll(".flow-step");
-    steps.forEach(s => s.classList.remove("completed"));
-}
+    </div>
 
-function highlightStep(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.add("completed");
-}
+    <!-- Group: Efficiency + Business -->
+    <div class="metric-group">
 
-function stepClick(step) {
-    const info = {
-        upload: "Upload CSV file with historical load and related features.",
-        ingestion: "Ingestion: read CSV, basic validation, and loading into DataFrame.",
-        preprocessing: "Preprocessing: cleaning, handling missing values, transformations.",
-        features: "Feature Engineering: time-based features, lags, calendar, etc.",
-        model: "Model & Forecast: train/apply model to generate short-term load forecast.",
-        output: "Output File: forecast results saved as CSV for download."
-    };
-    document.getElementById("step-info").innerText = info[step] || "";
-}
-</script>
+        <div class="metric-category">
+            <div class="category-header"><span class="category-title">Efficiency</span></div>
+            <div class="category-content">
+                <div class="metric-row"><span>Training Time (s)</span><span id="eff-train" class="metric-value">—</span><div class="metric-color"></div></div>
+                <div class="metric-row"><span>Inference Time (s)</span><span id="eff-inf" class="metric-value">—</span><div class="metric-color"></div></div>
+                <div class="metric-row"><span>Model Size (MB)</span><span id="eff-size" class="metric-value">—</span><div class="metric-color"></div></div>
+            </div>
+        </div>
+
+        <div class="metric-category">
+            <div class="category-header"><span class="category-title">Business</span></div>
+            <div class="category-content">
+                <div class="metric-row"><span>Peak Demand MAE</span><span id="biz-peak" class="metric-value">—</span><div class="metric-color"></div></div>
+                <div class="metric-row"><span>Energy Weighted MAPE</span><span id="biz-ewm" class="metric-value">—</span><div class="metric-color"></div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Horizon (alone, tall) -->
+    <div class="metric-category">
+        <div class="category-header"><span class="category-title">Horizon-wise MAE</span></div>
+        <div class="category-content" id="horizon-container"></div>
+    </div>
+
+    <!-- Full-width glossary box -->
+    <div class="metric-category full-width">
+        <div class="category-header">
+            <span class="category-title">Metric Acronyms (Full Forms)</span>
+        </div>
+        <div class="category-content">
+            MAE – Mean Absolute Error,
+            RMSE – Root Mean Square Error,
+            MAPE – Mean Absolute Percentage Error,
+            SMAPE – Symmetric Mean Absolute Percentage Error,
+            MD_AE – Median Absolute Error,
+            R² – Coefficient of Determination,
+            NRMSE – Normalized Root Mean Square Error,
+            WAPE – Weighted Absolute Percentage Error,
+            MBE – Mean Bias Error,
+            PBIAS – Percent Bias,
+            Error Variance – Variance of Forecast Errors
+        </div>
+    </div>
+
+</div>
+
+<!-- Load JS last so all functions exist before button is clicked -->
+<script src="/static/script.js?v=1005"></script>
 
 </body>
 </html>

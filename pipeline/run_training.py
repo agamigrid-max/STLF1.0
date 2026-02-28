@@ -64,3 +64,82 @@ def run_pipeline(data_path="data/synthetic_load.csv",
 
 if __name__ == "__main__":
     run_pipeline()
+# pipeline/train.py
+
+import time
+import joblib
+import numpy as np
+from pathlib import Path
+
+from evaluation import evaluate_metrics
+
+
+def train_pipeline(
+    model,
+    X_train,
+    y_train,
+    X_val,
+    y_val,
+    model_save_path="models/baseline_model.pkl",
+    baseline_mape=None,
+    horizons=None,
+    peak_mask=None,
+    energy_weights=None,
+):
+    """
+    Runs training, evaluates metrics, saves model, and returns metrics JSON.
+    """
+
+    # ----------------------------
+    # 1. Training with timing
+    # ----------------------------
+    t0 = time.time()
+    model.fit(X_train, y_train)
+    training_time = time.time() - t0
+
+    # ----------------------------
+    # 2. Inference timing
+    # ----------------------------
+    t1 = time.time()
+    y_pred = model.predict(X_val)
+    inference_time = time.time() - t1
+
+    # ----------------------------
+    # 3. Model size
+    # ----------------------------
+    Path("models").mkdir(exist_ok=True)
+    joblib.dump(model, model_save_path)
+    model_size_mb = Path(model_save_path).stat().st_size / (1024 * 1024)
+
+    # ----------------------------
+    # 4. Runtime stats for efficiency metrics
+    # ----------------------------
+    runtime_stats = {
+        "training_time_sec": training_time,
+        "inference_time_sec": inference_time,
+        "model_size_mb": model_size_mb,
+    }
+
+    # ----------------------------
+    # 5. Evaluate metrics using the new engine
+    # ----------------------------
+    metrics = evaluate_metrics(
+        y_true=np.array(y_val),
+        y_pred=np.array(y_pred),
+        horizons=horizons,
+        runtime_stats=runtime_stats,
+        baseline_mape=baseline_mape,
+        peak_mask=peak_mask,
+        energy_weights=energy_weights,
+    )
+
+    # ----------------------------
+    # 6. Return everything needed by API/UI
+    # ----------------------------
+    return {
+        "model_path": model_save_path,
+        "metrics": metrics,
+        "training_time_sec": training_time,
+        "inference_time_sec": inference_time,
+        "model_size_mb": model_size_mb,
+    }

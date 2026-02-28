@@ -41,24 +41,28 @@ button:hover {
     margin-top: 10px;
 }
 
-.flowchart {
+/* ========================================================= */
+/* PIPELINE FLOW — ONE ROW WITH ARROWS */
+/* ========================================================= */
+
+.pipeline-row {
     display: flex;
     align-items: center;
+    gap: 10px;
     flex-wrap: wrap;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .flow-step {
-    padding: 12px 18px;
+    padding: 10px 14px;
     background-color: #ffffff;
     border: 2px solid #0077cc;
     border-radius: 8px;
-    min-width: 140px;
+    min-width: 120px;
     text-align: center;
-    margin: 5px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .flow-step:hover {
@@ -73,15 +77,119 @@ button:hover {
 }
 
 .flow-arrow {
-    margin: 0 5px;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
-    color: #444;
+    color: #555;
 }
 
+/* Step info text */
 #step-info {
     margin-top: 15px;
     font-style: italic;
     color: #333;
     padding: 10px 0;
+}
+
+/* ========================================================= */
+/* METRICS DASHBOARD — 3‑COLUMN METRIC ROWS + GROUPING */
+/* ========================================================= */
+
+.metrics-dashboard {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* Group wrapper: stacks two metric boxes vertically */
+.metric-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Full-width glossary box */
+.metric-category.full-width {
+    grid-column: 1 / -1;
+}
+
+.metric-category {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fafafa;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: #f3f6fa;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.category-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.category-content {
+    margin-top: 10px;
+    padding-left: 5px;
+}
+
+/* Metric row: 3 columns (name | value | color box) */
+.metric-row {
+    display: grid;
+    grid-template-columns: 1fr auto 20px;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px dashed #e5e5e5;
+    gap: 10px;
+}
+
+.metric-row:last-child {
+    border-bottom: none;
+}
+
+.metric-value {
+    color: #000;
+    font-weight: bold;
+}
+
+.metric-color {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+}
+
+.metric-color.green {
+    background-color: #2ecc71;
+}
+
+.metric-color.yellow {
+    background-color: #f1c40f;
+}
+
+.metric-color.red {
+    background-color: #e74c3c;
+}
+
+/* Download report button */
+.download-report-btn {
+    margin-top: 20px;
+    padding: 10px 18px;
+    background-color: #444;
+    color: white;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.download-report-btn:hover {
+    background-color: #222;
 }
